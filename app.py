@@ -65,15 +65,11 @@ fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0},coloraxis={'showscale':False}
 maps = fig
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-# app = dash.Dash(__name__)
 
+server = flask.Flask(__name__)
+server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
+app = dash.Dash(__name__, server=server, external_stylesheets=external_stylesheets)
 
-# server = flask.Flask(__name__)
-# server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
-# app = dash.Dash(__name__, server=server, external_stylesheets=external_stylesheets)
-
-@functools.lru_cache(maxsize=64)
 def build_map(selection):
     
     selected = data.Crime.to_frame()

@@ -7,4 +7,3 @@ flask
 gunicorn 
 dash-renderer
 tabulate
-functools

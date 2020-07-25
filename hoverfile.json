@@ -2,14 +2,14 @@
     "points": [
         {
             "curveNumber": 0,
-            "pointNumber": 81,
-            "pointIndex": 81,
-            "x": -0.04974699412621477,
-            "y": 0.62151675050372,
-            "text": "Bronxdale, Bronx",
-            "marker.opacity": 0.5796549472705793,
-            "marker.size": 8.539678023309444,
-            "marker.color": "blue"
+            "pointNumber": 103,
+            "pointIndex": 103,
+            "x": -0.3952008494544335,
+            "y": -0.06367268680628582,
+            "text": "West Village, Manhattan",
+            "marker.opacity": 0.8285682926086718,
+            "marker.size": 21.44952890478767,
+            "marker.color": "green"
         }
     ]
 }

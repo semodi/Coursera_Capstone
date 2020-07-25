@@ -1,13 +1,14 @@
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import flask
 import os
 from numpy.random import randint
+from flask_caching import Cache
 
 data = pd.read_csv('normalized_data.csv').set_index('Neighborhood')
 data_merged = pd.read_csv('merged.csv').set_index('Neighborhood')
@@ -36,8 +37,8 @@ data['pe'] = is_pareto_efficient(1 - data.iloc[:,1:].fillna(0).values)
 
 costs = ['Rent','Subway distance','Safety','Midtown distance','Venue density']
 
-THETA = np.linspace(0,1,len(data.loc[data.pe]))*2*np.pi
-np.random.shuffle(THETA)
+THETA_ = np.linspace(0,1,len(data.loc[data.pe]))*2*np.pi
+np.random.shuffle(THETA_)
 
 import json
 import plotly.express as px
@@ -70,6 +71,12 @@ server = flask.Flask(__name__)
 server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
 app = dash.Dash(__name__, server=server, external_stylesheets=external_stylesheets)
 
+cache = Cache(app.server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache-directory'
+})
+
+@cache.memoize(timeout=20)  # in seconds
 def build_map(selection):
     
     selected = data.Crime.to_frame()
@@ -118,6 +125,7 @@ app.layout = \
                  ],style={ 'height': 400,'width':400,'float':'left','margin' : {'l':0, 'b': 0, 't': 200, 'r': 0}}
                  )]),
                  html.Div(id='intermediate-value',children=[], style={'display': 'none'}),
+                 html.Div(id='theta-value',children=THETA_, style={'display': 'none'}),
                  html.Div([
                     dcc.Graph(id='graph-map',figure=maps)
                 ],style={ 'height': 400,'width':450,'float':'left','margin' : {'l':0, 'b': 0, 't': 200, 'r': 0}}
@@ -131,8 +139,9 @@ app.layout = \
      Output('graph-trend','figure'),
      Output('intermediate-value','children')],
     [Input('input_neighborhood', 'value')] + [Input('slider_{}'.format(i),'value') for i in costs] + \
-    [Input('graph-trend','hoverData') ])
-def update_trend_figure(neighborhood,sli_rent, sli_subway, sli_crime, sli_midtown,sli_venue, mouseHover):
+    [Input('graph-trend','hoverData') ],
+     [State('theta-value','children')])
+def update_trend_figure(neighborhood,sli_rent, sli_subway, sli_crime, sli_midtown,sli_venue, mouseHover, THETA):
     
     traces = []
     with open('hoverfile.json','w') as file:
@@ -147,7 +156,7 @@ def update_trend_figure(neighborhood,sli_rent, sli_subway, sli_crime, sli_midtow
     cost = np.sort(cost)
     r = (1.05 - cost)**(1/(1.7))
     r /= np.max(r)
-    theta = THETA[cost_idx]
+    theta = np.array(THETA)[cost_idx]
 #     np.random.shuffle(theta)
     x = np.cos(theta)*r
     y = np.sin(theta)*r
@@ -222,6 +231,8 @@ def update_trend_figure(neighborhood,sli_rent, sli_subway, sli_crime, sli_midtow
     selected.to_json('selection.json')
     returns += [{'data': traces,
                  'layout':{
+                 'paper_bgcolor':'rgba(0,0,0,0)',
+                 'plot_bgcolor':'rgba(0,0,0,0)',
                  'xaxes':{'range':[-1,1]},
                  'yaxes':{'range':[-1,1]},
                  'hovermode': 'closest',
@@ -249,6 +260,8 @@ def update_map(out_neigh, selected):
     maps = fig
     return [{'data':maps.data,
                 'layout':{
+                     'paper_bgcolor':'rgba(0,0,0,0)',
+                     'plot_bgcolor':'rgba(0,0,0,0)',
                     'margin' : {'l':10, 'b': 0, 't': 0, 'r': 10},
                     'geo':{
                         'fitbounds' : "locations",

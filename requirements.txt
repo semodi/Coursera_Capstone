@@ -7,4 +7,4 @@ flask
 gunicorn 
 dash-renderer
 tabulate
-flask-cache
+flask_caching

@@ -2,14 +2,14 @@
     "points": [
         {
             "curveNumber": 0,
-            "pointNumber": 103,
-            "pointIndex": 103,
-            "x": -0.3952008494544335,
-            "y": -0.06367268680628582,
-            "text": "West Village, Manhattan",
-            "marker.opacity": 0.8285682926086718,
-            "marker.size": 21.44952890478767,
-            "marker.color": "green"
+            "pointNumber": 117,
+            "pointIndex": 117,
+            "x": -0.14218737832862538,
+            "y": 0.20242671345570623,
+            "text": "Fordham, Bronx",
+            "marker.opacity": 0.9523008560312962,
+            "marker.size": 33.90332754760798,
+            "marker.color": "blue"
         }
     ]
 }

@@ -88,9 +88,10 @@ def build_map(selection):
                            color_continuous_scale="twilight",
                             featureidkey="properties.neighborhood",
 #                            range_color=(0, 12),
-                           projection='mercator'
+                           projection='mercator',
     )
-    fig.update_traces({'text' : ['{}'.format(n) for n in selected.index]})
+    fig.update_traces({'text' : ['{}'.format(n) for n in selected.index]
+                        })
     return fig
 
 app.layout = \
@@ -128,7 +129,7 @@ app.layout = \
                  html.Div(id='theta-value',children=THETA_, style={'display': 'none'}),
                  html.Div([
                     dcc.Graph(id='graph-map',figure=maps)
-                ],style={ 'height': 400,'width':450,'float':'left','margin' : {'l':0, 'b': 0, 't': 200, 'r': 0}}
+                    ],style={ 'height': 400,'width':450,'float':'left','margin' : {'l':0, 'b': 0, 't': 200, 'r': 0}}
                 ),
             ],
     )
@@ -142,7 +143,6 @@ app.layout = \
     [Input('graph-trend','hoverData') ],
      [State('theta-value','children')])
 def update_trend_figure(neighborhood,sli_rent, sli_subway, sli_crime, sli_midtown,sli_venue, mouseHover, THETA):
-    
     traces = []
     with open('hoverfile.json','w') as file:
         file.write(json.dumps(mouseHover,indent=4))
@@ -233,8 +233,10 @@ def update_trend_figure(neighborhood,sli_rent, sli_subway, sli_crime, sli_midtow
                  'layout':{
                  'paper_bgcolor':'rgba(0,0,0,0)',
                  'plot_bgcolor':'rgba(0,0,0,0)',
-                 'xaxes':{'range':[-1,1]},
-                 'yaxes':{'range':[-1,1]},
+                 'xaxes':{'range':[-1,1],'showticklabels':False},
+                 'yaxes':{'range':[-1,1],'showticklabels':False},
+                 'xaxis':{'range':[-1,1],'showticklabels':False},
+                 'yaxis':{'range':[-1,1],'showticklabels':False},
                  'hovermode': 'closest',
                  'transition' :{'duration': 200},
                  'autosize':False,
@@ -266,7 +268,8 @@ def update_map(out_neigh, selected):
                     'geo':{
                         'fitbounds' : "locations",
                         'visible' :False,
-                        'projection':go.layout.geo.Projection(type = 'mercator')
+                        'projection':go.layout.geo.Projection(type = 'mercator'),
+                        'bgcolor':'rgba(0,0,0,0)'
                     },
                     
                     'hoverinfo' : 'text',
